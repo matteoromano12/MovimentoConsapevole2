@@ -1,0 +1,45 @@
+<!doctype html>
+<html class="no-js" lang="it">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Accedi — Pannello News | Mary Ceraolo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon.png">
+  <meta name="theme-color" content="#fafafa">
+</head>
+
+<body>
+
+  <div class="admin-login">
+    <div class="admin-login__card">
+      <a class="logo" href="index.html">MARY CERAOLO<span class="logo__sub">Pannello News</span></a>
+
+      <h1>Accedi</h1>
+      <p>Inserisci la password per gestire gli articoli del sito.</p>
+
+      <form data-login-form autocomplete="on">
+        <label class="field">
+          <span>Password</span>
+          <input type="password" name="password" data-password required autofocus placeholder="La tua password">
+        </label>
+        <p class="admin-login__error" data-login-error hidden>Password errata. Riprova.</p>
+        <button type="submit" class="btn btn-primary" data-login-submit>Accedi</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/admin-login.js"></script>
+
+</body>
+
+</html>

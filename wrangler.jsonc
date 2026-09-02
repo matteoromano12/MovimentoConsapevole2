@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "movimentoconsapevole2",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-08-31",
+  "assets": {
+    "directory": "./",
+    "binding": "ASSETS",
+    "html_handling": "none",
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/admin.html", "/api/*"]
+  },
+  "kv_namespaces": [
+    { "binding": "ARTICLES_KV", "id": "14339356b9e640cfb221cbe50b06d2d7" }
+  ]
+}

@@ -1,0 +1,126 @@
+<!doctype html>
+<html class="no-js" lang="it">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Pannello News — Mary Ceraolo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon.png">
+  <meta name="theme-color" content="#fafafa">
+</head>
+
+<body>
+
+  <header class="admin-header">
+    <div class="wrap admin-header__bar">
+      <a class="logo" href="index.html">MARY CERAOLO<span class="logo__sub">Pannello News</span></a>
+      <div class="admin-header__actions">
+        <a href="news.html" class="btn btn-outline" target="_blank" rel="noopener">Vedi il sito ↗</a>
+        <button type="button" class="btn-link" data-logout>Esci</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap admin-main">
+    <div class="section-head" style="max-width: 42rem;">
+      <p class="eyebrow">Area riservata</p>
+      <h1 style="font-size: 2.25rem; line-height: 1.15; margin-bottom: 1rem;">Gestisci gli articoli</h1>
+      <p style="color: rgba(40,40,30,.7); line-height: 1.6;">Da qui puoi aggiungere, modificare o eliminare gli articoli della sezione "News &amp; Guide" del sito, senza dover toccare il codice.</p>
+    </div>
+
+    <div class="admin-toolbar">
+      <button type="button" class="btn btn-primary" data-new-article>+ Nuovo articolo</button>
+      <div class="admin-toolbar__secondary">
+        <button type="button" class="btn-link" data-export>Esporta backup</button>
+        <label class="btn-link" for="import-file">Importa backup</label>
+        <input type="file" id="import-file" accept="application/json" data-import hidden>
+      </div>
+    </div>
+
+    <div class="admin-list" data-admin-list></div>
+    <p class="admin-empty" data-admin-empty hidden>Non ci sono ancora articoli. Clicca su "Nuovo articolo" per iniziare.</p>
+  </main>
+
+  <div class="admin-overlay" data-admin-overlay hidden>
+    <div class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="admin-modal-title">
+      <div class="admin-modal__head">
+        <h2 id="admin-modal-title" data-modal-title>Nuovo articolo</h2>
+        <button type="button" class="admin-modal__close" data-close-modal aria-label="Chiudi">×</button>
+      </div>
+
+      <form class="admin-form" data-article-form novalidate>
+        <input type="hidden" data-field="id">
+
+        <label class="field">
+          <span>Titolo *</span>
+          <input type="text" data-field="title" required maxlength="140" placeholder="Es. Lavorare in smart-working senza rovinarsi la schiena">
+        </label>
+
+        <div class="form-row">
+          <label class="field">
+            <span>Categoria *</span>
+            <input type="text" data-field="tag" list="tag-suggestions" required maxlength="40" placeholder="Es. Patologie">
+            <datalist id="tag-suggestions" data-tag-suggestions></datalist>
+          </label>
+          <label class="field">
+            <span>Data di pubblicazione *</span>
+            <input type="date" data-field="dateISO" required>
+          </label>
+        </div>
+
+        <div class="field">
+          <span>Immagine di copertina *</span>
+          <div class="admin-image-picker">
+            <img data-image-preview alt="" class="admin-image-picker__preview">
+            <div class="admin-image-picker__controls">
+              <select data-image-select>
+                <option value="img/news-schiena.jpg">Schiena / postura</option>
+                <option value="img/news-piedi.jpg">Piedi / equilibrio</option>
+                <option value="img/news-studio.jpg">Studio / sedute</option>
+                <option value="__upload__">Carica una nuova immagine…</option>
+              </select>
+              <input type="file" accept="image/*" data-image-upload hidden>
+              <small class="field-hint">Consiglio: usa foto leggere (sotto 500 KB) per non appesantire il sito.</small>
+            </div>
+          </div>
+        </div>
+
+        <label class="field">
+          <span>Anteprima (breve riassunto) *</span>
+          <textarea data-field="excerpt" rows="2" required maxlength="220" placeholder="1-2 frasi che riassumono l'articolo: compaiono nell'elenco delle news."></textarea>
+        </label>
+
+        <label class="field">
+          <span>Testo dell'articolo *</span>
+          <textarea data-field="body" rows="10" required placeholder="Scrivi qui il testo dell'articolo."></textarea>
+          <small class="field-hint">Lascia una riga vuota tra un paragrafo e l'altro: verranno mostrati come paragrafi separati.</small>
+        </label>
+
+        <div class="admin-form__footer">
+          <button type="button" class="btn-link btn-link--danger" data-delete-article hidden>Elimina articolo</button>
+          <div class="admin-form__actions">
+            <button type="button" class="btn btn-outline" data-close-modal>Annulla</button>
+            <button type="submit" class="btn btn-primary">Salva articolo</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="admin-toast" data-admin-toast hidden></div>
+
+  <script src="js/articles-store.js"></script>
+  <script src="js/admin.js"></script>
+
+</body>
+
+</html>

@@ -3,6 +3,7 @@
 
 <head>
   <meta charset="utf-8">
+
   <title>Page Not Found</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
@@ -37,6 +38,26 @@
       width: 280px;
     }
 
+    .btn {
+        display: inline-block;
+        padding: 1rem 2rem;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        font-weight: 700;
+        border: 1px solid transparent;
+        transition: background-color 0.2s ease, color 0.2s ease;
+        cursor: pointer;
+        text-align: center;
+        background: oklch(100% 0 0);
+        color: oklch(45% .045 152);
+    }
+
+    a {
+        color: inherit;
+        text-decoration: none;
+    }
+
     @media only screen and (max-width: 280px) {
 
       body,
@@ -54,8 +75,9 @@
 </head>
 
 <body>
-  <h1>Page Not Found</h1>
-  <p>Sorry, but the page you were trying to view does not exist.</p>
+  <h1>Pagina Non Trovata</h1>
+  <p>Spiacenti, ma la pagina che stavi cercando di visualizzare non esiste.</p>
+  <a href="index.html" class="btn btn-light">Torna alla home</a>
 </body>
 
 </html>

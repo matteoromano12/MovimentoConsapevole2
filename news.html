@@ -72,74 +72,7 @@
       <input type="search" placeholder="Cerca un articolo (es. lombalgia, postura, collo…)" aria-label="Cerca un articolo" data-news-search>
     </div>
 
-    <div class="card-grid card-grid--3">
-      <a href="articolo.html?id=1" class="article-card" data-article-card>
-        <img src="img/news-schiena.jpg" width="768" height="512" loading="lazy" alt="Lavorare in smart-working senza rovinarsi la schiena">
-        <div class="article-card__body">
-          <div class="article-card__meta">
-            <span class="article-card__tag">Patologie</span>
-            <span class="article-card__date">12 Agosto 2026</span>
-          </div>
-          <h3>Lavorare in smart-working senza rovinarsi la schiena</h3>
-          <p>La postazione domestica è spesso la prima causa di lombalgia. Ecco 5 esercizi fondamentali da fare ogni ora davanti al computer e gli errori di ergonomia da evitare.</p>
-        </div>
-      </a>
-      <a href="articolo.html?id=2" class="article-card" data-article-card>
-        <img src="img/news-piedi.jpg" width="768" height="512" loading="lazy" alt="Perché la propriocezione è la chiave della tua forza">
-        <div class="article-card__body">
-          <div class="article-card__meta">
-            <span class="article-card__tag">Metodologia</span>
-            <span class="article-card__date">28 Luglio 2026</span>
-          </div>
-          <h3>Perché la propriocezione è la chiave della tua forza</h3>
-          <p>Il modo in cui il cervello percepisce il corpo nello spazio determina equilibrio, stabilità e potenza. Come allenarla, dal piede alla colonna.</p>
-        </div>
-      </a>
-      <a href="articolo.html?id=3" class="article-card" data-article-card>
-        <img src="img/news-studio.jpg" width="768" height="512" loading="lazy" alt="La routine mattutina per sbloccare le articolazioni">
-        <div class="article-card__body">
-          <div class="article-card__meta">
-            <span class="article-card__tag">Consigli</span>
-            <span class="article-card__date">9 Luglio 2026</span>
-          </div>
-          <h3>La routine mattutina per sbloccare le articolazioni</h3>
-          <p>Bastano 10 minuti al giorno per cambiare la tua postura: una sequenza semplice per risvegliare anche, colonna e spalle prima della giornata.</p>
-        </div>
-      </a>
-      <a href="articolo.html?id=4" class="article-card" data-article-card>
-        <img src="img/news-schiena.jpg" width="768" height="512" loading="lazy" alt="Lombalgia cronica: quando il dolore è un segnale, non un nemico">
-        <div class="article-card__body">
-          <div class="article-card__meta">
-            <span class="article-card__tag">Patologie</span>
-            <span class="article-card__date">20 Giugno 2026</span>
-          </div>
-          <h3>Lombalgia cronica: quando il dolore è un segnale, non un nemico</h3>
-          <p>Perché immobilizzarsi peggiora la lombalgia e come un movimento mirato e graduale accompagna il corpo verso la risoluzione del sintomo.</p>
-        </div>
-      </a>
-      <a href="articolo.html?id=5" class="article-card" data-article-card>
-        <img src="img/news-piedi.jpg" width="768" height="512" loading="lazy" alt="Cervicalgia e smartphone: cinque ritmi da provare in ufficio">
-        <div class="article-card__body">
-          <div class="article-card__meta">
-            <span class="article-card__tag">Patologie</span>
-            <span class="article-card__date">2 Giugno 2026</span>
-          </div>
-          <h3>Cervicalgia e smartphone: cinque ritmi da provare in ufficio</h3>
-          <p>Piccole sequenze di decompressione da inserire tra le ore di lavoro per ridurre rigidità, mal di testa e fastidio al risveglio.</p>
-        </div>
-      </a>
-      <a href="articolo.html?id=6" class="article-card" data-article-card>
-        <img src="img/news-studio.jpg" width="768" height="512" loading="lazy" alt="Scoliosi in età adulta: cosa significa essere seguiti oggi">
-        <div class="article-card__body">
-          <div class="article-card__meta">
-            <span class="article-card__tag">Patologie</span>
-            <span class="article-card__date">15 Maggio 2026</span>
-          </div>
-          <h3>Scoliosi in età adulta: cosa significa essere seguiti oggi</h3>
-          <p>Dalla valutazione alla rieducazione posturale globale: cosa aspettarsi da un percorso in studio e come evolve nel tempo.</p>
-        </div>
-      </a>
-    </div>
+    <div class="card-grid card-grid--3" data-articles-grid></div>
 
     <p class="news-empty" data-news-empty hidden>Nessun articolo trovato. Prova con un'altra parola chiave.</p>
 
@@ -162,6 +95,8 @@
 
   <script src="js/cart-core.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/articles-store.js"></script>
+  <script src="js/news-list.js"></script>
   <script src="js/news-search.js"></script>
 
 </body>

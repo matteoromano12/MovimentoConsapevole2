@@ -1,9 +1,8 @@
 document.addEventListener('DOMContentLoaded', function () {
   var input = document.querySelector('[data-news-search]');
-  var cards = document.querySelectorAll('[data-article-card]');
   var empty = document.querySelector('[data-news-empty]');
 
-  if (!input || !cards.length) {
+  if (!input) {
     return;
   }
 
@@ -12,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   input.addEventListener('input', function () {
+    var cards = document.querySelectorAll('[data-article-card]');
     var query = normalize(input.value);
     var visibleCount = 0;
 
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     if (empty) {
-      empty.hidden = visibleCount !== 0;
+      empty.hidden = visibleCount !== 0 || cards.length === 0;
     }
   });
 });
