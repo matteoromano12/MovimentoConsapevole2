@@ -1101,6 +1101,10 @@ section {
   display: block;
 }
 
+.form-note.is-error {
+  color: var(--clay);
+}
+
 @media (min-width: 30em) {
   .form-row {
     grid-template-columns: 1fr 1fr;

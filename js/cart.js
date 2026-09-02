@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
   var root = document.querySelector('[data-cart-root]');
-  if (!root || typeof PRODUCTS === 'undefined') {
+  if (!root || typeof ProductsStore === 'undefined') {
     return;
   }
 
@@ -10,8 +10,10 @@ document.addEventListener('DOMContentLoaded', function () {
   var clearBtn = root.querySelector('[data-cart-clear]');
   var formatter = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' });
 
+  var products = [];
+
   function findProduct(id) {
-    return PRODUCTS.filter(function (p) { return p.id === id; })[0];
+    return products.filter(function (p) { return p.id === id; })[0];
   }
 
   function render() {
@@ -86,5 +88,10 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  render();
+  ProductsStore.getAll().then(function (list) {
+    products = list;
+    render();
+  }).catch(function () {
+    listEl.innerHTML = '<p>Impossibile caricare il carrello al momento. Riprova più tardi.</p>';
+  });
 });

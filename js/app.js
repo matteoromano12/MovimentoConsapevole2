@@ -17,16 +17,4 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     });
   }
-
-  var form = document.querySelector('.contact-form');
-  var note = document.querySelector('.form-note');
-
-  if (form && note) {
-    form.addEventListener('submit', function (event) {
-      event.preventDefault();
-      note.textContent = 'Grazie! Ti risponderò entro un giorno lavorativo.';
-      note.classList.add('is-visible');
-      form.reset();
-    });
-  }
 });

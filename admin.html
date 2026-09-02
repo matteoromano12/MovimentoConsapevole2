@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
-  <title>Pannello News — Mary Ceraolo</title>
+  <title>Pannello di gestione — Mary Ceraolo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap">
@@ -22,7 +22,7 @@
 
   <header class="admin-header">
     <div class="wrap admin-header__bar">
-      <a class="logo" href="index.html">MARY CERAOLO<span class="logo__sub">Pannello News</span></a>
+      <a class="logo" href="index.html">MARY CERAOLO<span class="logo__sub">Pannello di gestione</span></a>
       <div class="admin-header__actions">
         <a href="news.html" class="btn btn-outline" target="_blank" rel="noopener">Vedi il sito ↗</a>
         <button type="button" class="btn-link" data-logout>Esci</button>
@@ -33,23 +33,90 @@
   <main class="wrap admin-main">
     <div class="section-head" style="max-width: 42rem;">
       <p class="eyebrow">Area riservata</p>
-      <h1 style="font-size: 2.25rem; line-height: 1.15; margin-bottom: 1rem;">Gestisci gli articoli</h1>
-      <p style="color: rgba(40,40,30,.7); line-height: 1.6;">Da qui puoi aggiungere, modificare o eliminare gli articoli della sezione "News &amp; Guide" del sito, senza dover toccare il codice.</p>
+      <h1 style="font-size: 2.25rem; line-height: 1.15; margin-bottom: 1rem;">Pannello di gestione</h1>
+      <p style="color: rgba(40,40,30,.7); line-height: 1.6;">Da qui gestisci articoli, prenotazioni, prodotti dello shop e disponibilità del calendario, senza dover toccare il codice.</p>
     </div>
 
-    <div class="admin-toolbar">
-      <button type="button" class="btn btn-primary" data-new-article>+ Nuovo articolo</button>
-      <div class="admin-toolbar__secondary">
-        <button type="button" class="btn-link" data-export>Esporta backup</button>
-        <label class="btn-link" for="import-file">Importa backup</label>
-        <input type="file" id="import-file" accept="application/json" data-import hidden>
+    <nav class="admin-tabs" data-admin-tabs>
+      <button type="button" class="admin-tab is-active" data-tab-button="articles">Articoli</button>
+      <button type="button" class="admin-tab" data-tab-button="bookings">Prenotazioni<span class="admin-tab__badge" data-pending-badge hidden>0</span></button>
+      <button type="button" class="admin-tab" data-tab-button="shop">Shop</button>
+      <button type="button" class="admin-tab" data-tab-button="availability">Disponibilità</button>
+    </nav>
+
+    <!-- ===================== Articoli ===================== -->
+    <section class="admin-panel" data-tab-panel="articles">
+      <div class="admin-toolbar">
+        <button type="button" class="btn btn-primary" data-new-article>+ Nuovo articolo</button>
+        <div class="admin-toolbar__secondary">
+          <button type="button" class="btn-link" data-export>Esporta backup</button>
+          <label class="btn-link" for="import-file">Importa backup</label>
+          <input type="file" id="import-file" accept="application/json" data-import hidden>
+        </div>
       </div>
-    </div>
 
-    <div class="admin-list" data-admin-list></div>
-    <p class="admin-empty" data-admin-empty hidden>Non ci sono ancora articoli. Clicca su "Nuovo articolo" per iniziare.</p>
+      <div class="admin-list" data-admin-list></div>
+      <p class="admin-empty" data-admin-empty hidden>Non ci sono ancora articoli. Clicca su "Nuovo articolo" per iniziare.</p>
+    </section>
+
+    <!-- ===================== Prenotazioni ===================== -->
+    <section class="admin-panel" data-tab-panel="bookings" hidden>
+      <p class="admin-panel__intro">Le nuove richieste arrivano "in attesa": accettale o rifiutale per confermarle al cliente. Le prenotazioni accettate o in attesa occupano l'orario nel calendario pubblico.</p>
+      <div class="admin-list" data-bookings-list></div>
+      <p class="admin-empty" data-bookings-empty hidden>Non ci sono ancora prenotazioni.</p>
+    </section>
+
+    <!-- ===================== Shop ===================== -->
+    <section class="admin-panel" data-tab-panel="shop" hidden>
+      <div class="admin-toolbar">
+        <button type="button" class="btn btn-primary" data-new-product>+ Nuovo prodotto</button>
+      </div>
+
+      <div class="admin-list" data-shop-list></div>
+      <p class="admin-empty" data-shop-empty hidden>Non ci sono ancora prodotti. Clicca su "Nuovo prodotto" per iniziare.</p>
+    </section>
+
+    <!-- ===================== Disponibilità ===================== -->
+    <section class="admin-panel" data-tab-panel="availability" hidden>
+      <p class="admin-panel__intro">Imposta i giorni e gli orari in cui i clienti possono prenotare online, la durata di ogni appuntamento e le date da bloccare (ferie, chiusure).</p>
+
+      <form class="admin-form admin-form--settings" data-settings-form>
+        <label class="field" style="max-width: 16rem;">
+          <span>Durata di ogni appuntamento</span>
+          <select data-field="slotMinutes">
+            <option value="15">15 minuti</option>
+            <option value="20">20 minuti</option>
+            <option value="30">30 minuti</option>
+            <option value="45">45 minuti</option>
+            <option value="60">1 ora</option>
+            <option value="90">1 ora e mezza</option>
+            <option value="120">2 ore</option>
+          </select>
+        </label>
+
+        <div class="weekly-hours" data-weekly-hours></div>
+
+        <div class="field">
+          <span>Date bloccate (ferie, chiusure)</span>
+          <div class="blocked-dates">
+            <div class="blocked-dates__add">
+              <input type="date" data-blocked-date-input>
+              <button type="button" class="btn btn-outline" data-add-blocked-date>Blocca questa data</button>
+            </div>
+            <div class="blocked-dates__list" data-blocked-dates-list></div>
+          </div>
+        </div>
+
+        <div class="admin-form__footer" style="justify-content: flex-end;">
+          <div class="admin-form__actions">
+            <button type="submit" class="btn btn-primary">Salva disponibilità</button>
+          </div>
+        </div>
+      </form>
+    </section>
   </main>
 
+  <!-- ===================== Modale articolo ===================== -->
   <div class="admin-overlay" data-admin-overlay hidden>
     <div class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="admin-modal-title">
       <div class="admin-modal__head">
@@ -116,10 +183,72 @@
     </div>
   </div>
 
+  <!-- ===================== Modale prodotto ===================== -->
+  <div class="admin-overlay" data-product-overlay hidden>
+    <div class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="product-modal-title">
+      <div class="admin-modal__head">
+        <h2 id="product-modal-title" data-product-modal-title>Nuovo prodotto</h2>
+        <button type="button" class="admin-modal__close" data-close-product-modal aria-label="Chiudi">×</button>
+      </div>
+
+      <form class="admin-form" data-product-form novalidate>
+        <input type="hidden" data-field="id">
+
+        <label class="field">
+          <span>Nome *</span>
+          <input type="text" data-field="name" required maxlength="140" placeholder="Es. Tappetino per esercizi posturali">
+        </label>
+
+        <div class="form-row">
+          <label class="field">
+            <span>Prezzo (€) *</span>
+            <input type="number" data-field="price" required min="0" step="0.01" placeholder="29.00">
+          </label>
+          <label class="field">
+            <span>Icona *</span>
+            <select data-field="icon" required data-product-icon-select>
+              <option value="mat">Tappetino</option>
+              <option value="roller">Rullo</option>
+              <option value="band">Fascia elastica</option>
+              <option value="cushion">Cuscino</option>
+              <option value="ball">Pallina</option>
+              <option value="book">Guida/libro</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="admin-image-picker__preview admin-image-picker__preview--icon" data-product-icon-preview></div>
+
+        <label class="field">
+          <span>Descrizione *</span>
+          <textarea data-field="description" rows="4" required maxlength="300" placeholder="Breve descrizione del prodotto."></textarea>
+        </label>
+
+        <div class="admin-form__footer">
+          <button type="button" class="btn-link btn-link--danger" data-delete-product hidden>Elimina prodotto</button>
+          <div class="admin-form__actions">
+            <button type="button" class="btn btn-outline" data-close-product-modal>Annulla</button>
+            <button type="submit" class="btn btn-primary">Salva prodotto</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <div class="admin-toast" data-admin-toast hidden></div>
 
+  <script src="js/product-icons.js"></script>
   <script src="js/articles-store.js"></script>
+  <script src="js/products-store.js"></script>
+  <script src="js/bookings-store.js"></script>
+  <script src="js/settings-store.js"></script>
+  <script src="js/admin-toast.js"></script>
+  <script src="js/admin-auth.js"></script>
+  <script src="js/admin-tabs.js"></script>
   <script src="js/admin.js"></script>
+  <script src="js/admin-bookings.js"></script>
+  <script src="js/admin-shop.js"></script>
+  <script src="js/admin-availability.js"></script>
 
 </body>
 

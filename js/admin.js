@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', function () {
   var form = document.querySelector('[data-article-form]');
   var modalTitle = document.querySelector('[data-modal-title]');
   var deleteBtn = document.querySelector('[data-delete-article]');
-  var toast = document.querySelector('[data-admin-toast]');
   var tagSuggestions = document.querySelector('[data-tag-suggestions]');
 
   var fieldId = form.querySelector('[data-field="id"]');
@@ -26,20 +25,6 @@ document.addEventListener('DOMContentLoaded', function () {
   var imagePreview = form.querySelector('[data-image-preview]');
 
   var currentImage = '';
-  var toastTimer = null;
-
-  function goToLogin() {
-    window.location.href = '/admin.html';
-  }
-
-  function handleError(err, fallbackMessage) {
-    if (err instanceof ArticlesStore.UnauthorizedError) {
-      window.alert('La sessione è scaduta. Effettua di nuovo l\'accesso.');
-      goToLogin();
-      return;
-    }
-    window.alert(fallbackMessage);
-  }
 
   function renderList() {
     return ArticlesStore.getAll().then(function (articles) {
@@ -71,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function () {
         listEl.appendChild(row);
       });
     }).catch(function (err) {
-      handleError(err, 'Impossibile caricare gli articoli al momento.');
+      AdminAuth.handleError(err, 'Impossibile caricare gli articoli al momento.');
     });
   }
 
@@ -105,21 +90,8 @@ document.addEventListener('DOMContentLoaded', function () {
     document.body.classList.remove('admin-modal-open');
   }
 
-  function showToast(message) {
-    toast.textContent = message;
-    toast.hidden = false;
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(function () {
-      toast.hidden = true;
-    }, 3200);
-  }
-
   document.querySelector('[data-new-article]').addEventListener('click', function () {
     openModal(null);
-  });
-
-  document.querySelector('[data-logout]').addEventListener('click', function () {
-    fetch('/api/logout', { method: 'POST', credentials: 'same-origin' }).finally(goToLogin);
   });
 
   listEl.addEventListener('click', function (event) {
@@ -128,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (editId) {
       ArticlesStore.getById(editId).then(openModal).catch(function (err) {
-        handleError(err, 'Impossibile aprire l\'articolo.');
+        AdminAuth.handleError(err, 'Impossibile aprire l\'articolo.');
       });
     } else if (deleteId) {
       ArticlesStore.getById(deleteId).then(function (article) {
@@ -137,11 +109,11 @@ document.addEventListener('DOMContentLoaded', function () {
           return ArticlesStore.remove(deleteId).then(function () {
             return renderList();
           }).then(function () {
-            showToast('Articolo eliminato.');
+            AdminToast.show('Articolo eliminato.');
           });
         }
       }).catch(function (err) {
-        handleError(err, 'Impossibile eliminare l\'articolo.');
+        AdminAuth.handleError(err, 'Impossibile eliminare l\'articolo.');
       });
     }
   });
@@ -180,11 +152,11 @@ document.addEventListener('DOMContentLoaded', function () {
           closeModal();
           return renderList();
         }).then(function () {
-          showToast('Articolo eliminato.');
+          AdminToast.show('Articolo eliminato.');
         });
       }
     }).catch(function (err) {
-      handleError(err, 'Impossibile eliminare l\'articolo.');
+      AdminAuth.handleError(err, 'Impossibile eliminare l\'articolo.');
     });
   });
 
@@ -214,9 +186,9 @@ document.addEventListener('DOMContentLoaded', function () {
       closeModal();
       return renderList();
     }).then(function () {
-      showToast('Articolo salvato.');
+      AdminToast.show('Articolo salvato.');
     }).catch(function (err) {
-      handleError(err, 'Impossibile salvare l\'articolo. Riprova.');
+      AdminAuth.handleError(err, 'Impossibile salvare l\'articolo. Riprova.');
     }).finally(function () {
       submitBtn.disabled = false;
     });
@@ -234,7 +206,7 @@ document.addEventListener('DOMContentLoaded', function () {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     }).catch(function (err) {
-      handleError(err, 'Impossibile esportare il backup.');
+      AdminAuth.handleError(err, 'Impossibile esportare il backup.');
     });
   });
 
@@ -246,10 +218,10 @@ document.addEventListener('DOMContentLoaded', function () {
       ArticlesStore.importJSON(reader.result).then(function () {
         return renderList();
       }).then(function () {
-        showToast('Backup importato.');
+        AdminToast.show('Backup importato.');
       }).catch(function (err) {
-        if (err instanceof ArticlesStore.UnauthorizedError) {
-          handleError(err);
+        if (AdminAuth.isUnauthorized(err)) {
+          AdminAuth.handleError(err);
           return;
         }
         window.alert('Il file selezionato non è un backup valido.');
