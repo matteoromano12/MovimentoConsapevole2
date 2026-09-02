@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
     }
 
-    document.title = article.title + ' — Mary Ceraolo';
+    document.title = article.title + ' — Mary Ceraulo';
 
     var tagEl = container.querySelector('[data-article-tag]');
     var dateEl = container.querySelector('[data-article-date]');
