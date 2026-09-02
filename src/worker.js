@@ -6,6 +6,10 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
+    if (url.pathname === '/') {
+      return env.ASSETS.fetch(new Request(new URL('/index.html', request.url), request));
+    }
+
     if (url.pathname === '/admin.html') {
       return handleAdminPage(request, env);
     }
