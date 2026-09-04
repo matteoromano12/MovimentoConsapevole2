@@ -452,6 +452,66 @@ ul {
   transform: scale(1);
 }
 
+/* ---------- Video banner ---------- */
+
+.video-banner {
+  width: 100%;
+  border-bottom: 1px solid var(--border);
+}
+
+.video-banner__frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background: linear-gradient(135deg, var(--muted), var(--sand));
+  outline: 1px dashed rgba(40, 40, 30, 0.25);
+  outline-offset: -1rem;
+}
+
+.video-banner__play {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 50%;
+  background: var(--card);
+  color: var(--primary);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+.video-banner__play svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-left: 0.15rem;
+}
+
+.video-banner__label {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.video-banner__hint {
+  font-size: 0.8125rem;
+  color: rgba(40, 40, 30, 0.55);
+}
+
+@media (min-width: 48em) {
+  .video-banner__frame {
+    max-height: 70vh;
+  }
+}
+
 /* ---------- Hero ---------- */
 
 .hero {
