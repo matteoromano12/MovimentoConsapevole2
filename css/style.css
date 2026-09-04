@@ -452,8 +452,6 @@ ul {
   transform: scale(1);
 }
 
-/* ---------- Video banner ---------- */
-
 .video-banner {
   width: 100%;
   border-bottom: 1px solid var(--border);
