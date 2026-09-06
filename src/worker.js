@@ -64,7 +64,7 @@ async function handleMedia(request, env, key) {
   headers.set('accept-ranges', 'bytes');
   headers.set('cache-control', 'public, max-age=31536000, immutable');
 
-  if (object.range && 'offset' in object.range) {
+  if (request.headers.has('range') && object.range && 'offset' in object.range) {
     const start = object.range.offset;
     const length = object.range.length ?? object.size - start;
     headers.set('content-range', `bytes ${start}-${start + length - 1}/${object.size}`);
