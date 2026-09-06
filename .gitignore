@@ -2,5 +2,5 @@ node_modules/
 .wrangler/
 .dev.vars
 
-# Video di grandi dimensioni: servito da R2, non va in git (supera il limite di GitHub)
-img/video2.mp4
+# Backup del video originale in 4K non compresso (troppo grande per Git)
+img/video2-originale-4k.mp4
