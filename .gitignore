@@ -1,3 +1,6 @@
 node_modules/
 .wrangler/
 .dev.vars
+
+# Video di grandi dimensioni: servito da R2, non va in git (supera il limite di GitHub)
+img/video2.mp4

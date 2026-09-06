@@ -37,9 +37,44 @@ export default {
       return handleApi(request, env, url);
     }
 
+    if (url.pathname.startsWith('/media/')) {
+      return handleMedia(request, env, url.pathname.slice('/media/'.length));
+    }
+
     return env.ASSETS.fetch(request);
   },
 };
+
+async function handleMedia(request, env, key) {
+  if (!key) {
+    return new Response('Non trovato', { status: 404 });
+  }
+
+  const object = await env.MEDIA_BUCKET.get(decodeURIComponent(key), {
+    range: request.headers,
+  });
+
+  if (!object) {
+    return new Response('Non trovato', { status: 404 });
+  }
+
+  const headers = new Headers();
+  object.writeHttpMetadata(headers);
+  headers.set('etag', object.httpEtag);
+  headers.set('accept-ranges', 'bytes');
+  headers.set('cache-control', 'public, max-age=31536000, immutable');
+
+  if (object.range && 'offset' in object.range) {
+    const start = object.range.offset;
+    const length = object.range.length ?? object.size - start;
+    headers.set('content-range', `bytes ${start}-${start + length - 1}/${object.size}`);
+    headers.set('content-length', String(length));
+    return new Response(object.body, { status: 206, headers });
+  }
+
+  headers.set('content-length', String(object.size));
+  return new Response(object.body, { status: 200, headers });
+}
 
 async function handleAdminPage(request, env) {
   if (await isAuthenticated(request, env)) {
