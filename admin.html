@@ -199,8 +199,16 @@
           <input type="text" data-field="name" required maxlength="140" placeholder="Es. Tappetino per esercizi posturali">
         </label>
 
+        <label class="field">
+          <span>Tipo *</span>
+          <select data-field="type" required data-product-type-select>
+            <option value="product">Prodotto — aggiungi al carrello</option>
+            <option value="link">Link esterno — apre una pagina</option>
+          </select>
+        </label>
+
         <div class="form-row">
-          <label class="field">
+          <label class="field" data-product-price-field>
             <span>Prezzo (€) *</span>
             <input type="number" data-field="price" required min="0" step="0.01" placeholder="29.00">
           </label>
@@ -216,6 +224,11 @@
             </select>
           </label>
         </div>
+
+        <label class="field" data-product-url-field hidden>
+          <span>URL del link *</span>
+          <input type="url" data-field="url" maxlength="500" placeholder="https://esempio.it/pagina">
+        </label>
 
         <div class="admin-image-picker__preview admin-image-picker__preview--icon" data-product-icon-preview></div>
 

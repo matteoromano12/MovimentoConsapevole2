@@ -16,11 +16,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
   var fieldId = form.querySelector('[data-field="id"]');
   var fieldName = form.querySelector('[data-field="name"]');
+  var fieldType = form.querySelector('[data-field="type"]');
   var fieldPrice = form.querySelector('[data-field="price"]');
+  var fieldUrl = form.querySelector('[data-field="url"]');
   var fieldDescription = form.querySelector('[data-field="description"]');
+  var priceField = form.querySelector('[data-product-price-field]');
+  var urlField = form.querySelector('[data-product-url-field]');
 
   function updateIconPreview() {
     iconPreview.innerHTML = productIcon(iconSelect.value);
+  }
+
+  function updateTypeUI() {
+    var isLink = fieldType.value === 'link';
+    priceField.hidden = isLink;
+    fieldPrice.required = !isLink;
+    urlField.hidden = !isLink;
+    fieldUrl.required = isLink;
   }
 
   function renderList() {
@@ -31,11 +43,14 @@ document.addEventListener('DOMContentLoaded', function () {
       products.forEach(function (product) {
         var row = document.createElement('div');
         row.className = 'admin-row';
+        var meta = product.type === 'link'
+          ? ('Link → ' + product.url)
+          : formatter.format(product.price);
         row.innerHTML =
           '<div class="admin-row__thumb admin-row__thumb--icon">' + productIcon(product.icon) + '</div>' +
           '<div class="admin-row__body">' +
           '<h3>' + product.name + '</h3>' +
-          '<span class="admin-row__date">' + formatter.format(product.price) + '</span>' +
+          '<span class="admin-row__date">' + meta + '</span>' +
           '</div>' +
           '<div class="admin-row__actions">' +
           '<button type="button" class="btn-link" data-edit-product="' + product.id + '">Modifica</button>' +
@@ -55,10 +70,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     fieldId.value = product ? product.id : '';
     fieldName.value = product ? product.name : '';
-    fieldPrice.value = product ? product.price : '';
+    fieldType.value = product && product.type === 'link' ? 'link' : 'product';
+    fieldPrice.value = product && product.type !== 'link' ? product.price : '';
+    fieldUrl.value = product && product.type === 'link' ? product.url : '';
     fieldDescription.value = product ? product.description : '';
     iconSelect.value = product ? product.icon : iconSelect.options[0].value;
     updateIconPreview();
+    updateTypeUI();
 
     overlay.hidden = false;
     document.body.classList.add('admin-modal-open');
@@ -75,6 +93,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   iconSelect.addEventListener('change', updateIconPreview);
+  fieldType.addEventListener('change', updateTypeUI);
 
   listEl.addEventListener('click', function (event) {
     var editId = event.target.getAttribute('data-edit-product');
@@ -126,13 +145,19 @@ document.addEventListener('DOMContentLoaded', function () {
     event.preventDefault();
     if (!form.reportValidity()) return;
 
+    var isLink = fieldType.value === 'link';
     var product = {
       id: fieldId.value || null,
       name: fieldName.value.trim(),
-      price: Number(fieldPrice.value),
+      type: isLink ? 'link' : 'product',
       icon: iconSelect.value,
       description: fieldDescription.value.trim(),
     };
+    if (isLink) {
+      product.url = fieldUrl.value.trim();
+    } else {
+      product.price = Number(fieldPrice.value);
+    }
 
     var submitBtn = form.querySelector('button[type="submit"]');
     submitBtn.disabled = true;

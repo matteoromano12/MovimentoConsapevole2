@@ -185,15 +185,27 @@ async function handleSaveProduct(request, env) {
   if (!product || typeof product.name !== 'string' || !product.name.trim()) {
     return jsonResponse({ error: 'Nome mancante' }, 400);
   }
-  const price = Number(product.price);
-  if (!Number.isFinite(price) || price < 0) {
-    return jsonResponse({ error: 'Prezzo non valido' }, 400);
-  }
 
   product.name = product.name.trim();
-  product.price = Math.round(price * 100) / 100;
   product.icon = (product.icon || '').trim();
   product.description = (product.description || '').trim();
+  product.type = product.type === 'link' ? 'link' : 'product';
+
+  if (product.type === 'link') {
+    const url = typeof product.url === 'string' ? product.url.trim() : '';
+    if (!url) {
+      return jsonResponse({ error: 'URL mancante' }, 400);
+    }
+    product.url = url;
+    product.price = 0;
+  } else {
+    const price = Number(product.price);
+    if (!Number.isFinite(price) || price < 0) {
+      return jsonResponse({ error: 'Prezzo non valido' }, 400);
+    }
+    product.price = Math.round(price * 100) / 100;
+    delete product.url;
+  }
 
   const list = await readList(env, PRODUCTS_KEY);
 

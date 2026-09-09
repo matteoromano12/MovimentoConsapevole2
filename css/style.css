@@ -1349,6 +1349,10 @@ section {
   padding: 0.7rem 1.4rem;
 }
 
+.product-card__footer--link {
+  justify-content: flex-end;
+}
+
 @media (min-width: 40em) {
   .shop-grid {
     grid-template-columns: repeat(2, 1fr);
