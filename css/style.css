@@ -479,6 +479,10 @@ ul {
   border: 0;
 }
 
+.video-banner__frame video {
+  object-fit: contain;
+}
+
 @media (min-width: 48em) {
   .video-banner__frame {
     max-height: 70vh;
