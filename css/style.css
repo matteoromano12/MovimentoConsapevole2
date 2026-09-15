@@ -680,10 +680,12 @@ section {
 }
 
 .article-card img {
-  width: 100%;
+  width: calc(100% - 2rem);
+  margin: 0 auto 1.5rem;
+  display: block;
   aspect-ratio: 16 / 9;
   object-fit: cover;
-  margin-bottom: 1.5rem;
+  border-radius: 4px;
 }
 
 .article-card__body {
