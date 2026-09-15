@@ -4,6 +4,17 @@ document.addEventListener('DOMContentLoaded', function () {
     return;
   }
 
+  function escapeHtml(str) {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  function renderFormattedText(str) {
+    return escapeHtml(str).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  }
+
   ArticlesStore.getAll().then(function (articles) {
     var params = new URLSearchParams(window.location.search);
     var id = Number(params.get('id'));
@@ -38,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
       bodyEl.innerHTML = '';
       article.body.forEach(function (paragraph) {
         var p = document.createElement('p');
-        p.textContent = paragraph;
+        p.innerHTML = renderFormattedText(paragraph);
         bodyEl.appendChild(p);
       });
     }

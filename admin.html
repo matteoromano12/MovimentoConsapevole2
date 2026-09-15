@@ -168,8 +168,15 @@
 
         <label class="field">
           <span>Testo dell'articolo *</span>
-          <textarea data-field="body" rows="10" required placeholder="Scrivi qui il testo dell'articolo."></textarea>
-          <small class="field-hint">Lascia una riga vuota tra un paragrafo e l'altro: verranno mostrati come paragrafi separati.</small>
+          <div class="admin-editor">
+            <div class="admin-editor__toolbar">
+              <button type="button" class="admin-editor__btn" data-bold-toggle title="Grassetto (seleziona il testo e premi qui)">
+                <strong>B</strong>
+              </button>
+            </div>
+            <textarea class="admin-editor__textarea" data-field="body" rows="10" required placeholder="Scrivi qui il testo dell'articolo."></textarea>
+          </div>
+          <small class="field-hint">Lascia una riga vuota tra un paragrafo e l'altro: verranno mostrati come paragrafi separati. Per il grassetto: seleziona il testo e clicca sul pulsante <strong>B</strong>.</small>
         </label>
 
         <div class="admin-form__footer">

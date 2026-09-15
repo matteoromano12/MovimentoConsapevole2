@@ -311,6 +311,44 @@ body {
   color: rgba(40, 40, 30, 0.55);
 }
 
+.admin-editor__toolbar {
+  display: flex;
+  gap: 0.35rem;
+  padding: 0.4rem;
+  background: rgba(40, 40, 30, 0.04);
+  border: 1px solid rgba(40, 40, 30, 0.15);
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+}
+
+.admin-editor__btn {
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 0.6rem;
+  background: var(--background);
+  border: 1px solid rgba(40, 40, 30, 0.15);
+  border-radius: 4px;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  color: var(--foreground);
+  cursor: pointer;
+}
+
+.admin-editor__btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.admin-editor__btn.is-active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+.admin-editor .admin-editor__textarea {
+  border-radius: 0 0 6px 6px;
+}
+
 .admin-image-picker {
   display: flex;
   align-items: flex-start;

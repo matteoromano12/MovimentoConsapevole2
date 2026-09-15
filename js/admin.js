@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var fieldDate = form.querySelector('[data-field="dateISO"]');
   var fieldExcerpt = form.querySelector('[data-field="excerpt"]');
   var fieldBody = form.querySelector('[data-field="body"]');
+  var boldBtn = form.querySelector('[data-bold-toggle]');
 
   var imageSelect = form.querySelector('[data-image-select]');
   var imageUpload = form.querySelector('[data-image-upload]');
@@ -142,6 +143,55 @@ document.addEventListener('DOMContentLoaded', function () {
       setImagePreview(reader.result);
     };
     reader.readAsDataURL(file);
+  });
+
+  function toggleBold() {
+    var start = fieldBody.selectionStart;
+    var end = fieldBody.selectionEnd;
+    var value = fieldBody.value;
+    var marker = '**';
+
+    var before = value.slice(0, start);
+    var selected = value.slice(start, end);
+    var after = value.slice(end);
+
+    var alreadyWrapped = selected.slice(0, 2) === marker && selected.slice(-2) === marker && selected.length >= 4;
+    var wrappedOutside = before.slice(-2) === marker && after.slice(0, 2) === marker;
+
+    var newValue, newStart, newEnd;
+
+    if (alreadyWrapped) {
+      var inner = selected.slice(2, -2);
+      newValue = before + inner + after;
+      newStart = start;
+      newEnd = start + inner.length;
+    } else if (wrappedOutside) {
+      newValue = before.slice(0, -2) + selected + after.slice(2);
+      newStart = start - 2;
+      newEnd = end - 2;
+    } else if (selected) {
+      newValue = before + marker + selected + marker + after;
+      newStart = start + 2;
+      newEnd = end + 2;
+    } else {
+      var placeholder = 'testo in grassetto';
+      newValue = before + marker + placeholder + marker + after;
+      newStart = start + 2;
+      newEnd = newStart + placeholder.length;
+    }
+
+    fieldBody.value = newValue;
+    fieldBody.focus();
+    fieldBody.setSelectionRange(newStart, newEnd);
+  }
+
+  boldBtn.addEventListener('click', toggleBold);
+
+  fieldBody.addEventListener('keydown', function (event) {
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'b') {
+      event.preventDefault();
+      toggleBold();
+    }
   });
 
   deleteBtn.addEventListener('click', function () {
