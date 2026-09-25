@@ -165,6 +165,31 @@ ul {
     gap: 5rem;
 }
 
+.lista {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-left: 2px solid #c1714a;
+}
+
+.lista li {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+    padding: 25px 32px;
+}
+
+@media (max-width: 768px) {
+    .card-wrap {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+        display: flex;
+        gap: 5rem;
+        flex-direction: column;
+    }
+}
+
 .occupazione {
         max-width: 1280px;
         margin: 0 auto;
@@ -190,19 +215,6 @@ ul {
     margin: 0;
 }
 
-.lista {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    border-left: 2px solid #c1714a;
-}
-
-.lista li {
-    display: flex;
-    align-items: flex-start;
-    gap: 24px;
-    padding: 25px 32px;
-}
 
 .numero {
     font-family: 'Cormorant Garamond', serif;
