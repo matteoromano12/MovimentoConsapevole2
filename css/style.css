@@ -523,13 +523,13 @@ ul {
 }
 
 .video-banner__frame {
-  position: relative;
-  width: 100%;
-  max-width: calc(60vh * 16 / 9);
-  aspect-ratio: 16 / 9;
-  margin: 0 auto;
-  overflow: hidden;
-  background: var(--muted);
+    position: relative;
+    width: 100%;
+    max-width: 100%; /* piena larghezza pagina */
+    aspect-ratio: 1600 / 759; /* rapporto reale dell'immagine */
+    margin: 0 auto;
+    overflow: hidden;
+    background: var(--muted);
 }
 
 .video-banner__frame video,
@@ -1739,5 +1739,30 @@ section {
     page-break-after: avoid;
   }
 
+}
 
+.about-float {
+    width: 45%;
+    max-width: 320px;
+    border-radius: var(--radius);
+    object-fit: cover;
+}
+
+.about-float--right {
+    float: right;
+    margin: 0.5rem 0 1.5rem 2rem;
+}
+
+.about-float--left {
+    float: left;
+    margin: 1.5rem 2rem 1.5rem 0;
+}
+
+@media (max-width: 48em) {
+    .about-float {
+        float: none;
+        width: 100%;
+        max-width: none;
+        margin: 2rem 0;
+    }
 }
