@@ -532,6 +532,14 @@ ul {
     background: var(--muted);
 }
 
+.video-banner__frame::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(130deg, rgba(42, 31, 26, 0.75) 0%, rgba(176, 93, 56, 0.25) 70%, transparent 100%);
+    pointer-events: none;
+}
+
 .video-banner__frame video,
 .video-banner__frame img,
 .video-banner__frame iframe {
@@ -541,12 +549,6 @@ ul {
   height: 100%;
   object-fit: cover;
   border: 0;
-}
-
-@media (min-width: 48em) {
-  .video-banner__frame {
-    max-width: calc(70vh * 16 / 9);
-  }
 }
 
 /* ---------- Hero ---------- */
