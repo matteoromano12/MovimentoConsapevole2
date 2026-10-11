@@ -248,7 +248,7 @@ ul {
 }
 
 .eyebrow2 {
-    font-size: 1rem;
+    font-size: 1.3rem;
     color: black;
     margin: 0 0 1.25rem;
     font-family: var(--font-serif);
@@ -665,13 +665,14 @@ section {
 }
 
 .section-head h1 {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
 }
 
 /* ---------- Methodology (home) ---------- */
 
 .method-grid {
   gap: 3rem;
+  padding-top: 4rem;
 }
 
 .method-block__num {
