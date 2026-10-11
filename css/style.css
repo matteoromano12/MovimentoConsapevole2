@@ -1866,3 +1866,14 @@ section {
     text-underline-offset: 2px;
     text-decoration-thickness: 1px;
 }
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.logo__img {
+    height: 3rem;
+    width: auto;
+}
