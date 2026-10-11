@@ -666,11 +666,10 @@ section {
 
 .section-head h1 {
     font-size: 2.2rem;
-    font-family: var(--font-sans);
 }
 
 .section-head p {
-    font-family: var(--font-sans);
+    font-family: var(--font-serif);
     font-size: 1.3rem;
 }
 
