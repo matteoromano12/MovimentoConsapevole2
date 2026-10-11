@@ -251,7 +251,7 @@ ul {
     font-size: 1.3rem;
     color: black;
     margin: 0 0 1.25rem;
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
 }
 
 .italic {
@@ -666,10 +666,11 @@ section {
 
 .section-head h1 {
     font-size: 2.2rem;
+    font-family: var(--font-sans);
 }
 
 .section-head p {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
     font-size: 1.3rem;
 }
 
