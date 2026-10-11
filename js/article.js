@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function () {
         a.className = 'article-card';
 
         a.innerHTML =
-          '<img src="' + item.image + '" width="768" height="512" loading="lazy" alt="' + item.title + '">' +
+          '<img src="' + item.image + '" width="512" height="512" loading="lazy" alt="' + item.title + '">' +
           '<div class="article-card__body">' +
           '<span class="article-card__tag">' + item.tag + '</span>' +
           '<h3>' + item.title + '</h3>' +
