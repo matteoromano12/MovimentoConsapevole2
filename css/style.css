@@ -247,6 +247,15 @@ ul {
   margin: 0 0 1.25rem;
 }
 
+.eyebrow2 {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: black;
+    font-weight: 700;
+    margin: 0 0 1.25rem;
+}
+
 .italic {
   font-style: italic;
 }
