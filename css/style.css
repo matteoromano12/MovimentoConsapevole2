@@ -248,12 +248,10 @@ ul {
 }
 
 .eyebrow2 {
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.3em;
+    font-size: 1rem;
     color: black;
-    font-weight: 700;
     margin: 0 0 1.25rem;
+    font-family: var(--font-serif);
 }
 
 .italic {
