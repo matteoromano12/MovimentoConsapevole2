@@ -204,7 +204,7 @@ ul {
     align-items: center;
     justify-content: center;
     padding: 2rem 0rem;
-    background: var(--sand);
+    background: var(--card);
     border-radius: 1rem;
 }
 
@@ -635,6 +635,7 @@ section {
 .section--card {
   background: var(--card);
 }
+
 
 .section--primary {
   background: var(--primary);
