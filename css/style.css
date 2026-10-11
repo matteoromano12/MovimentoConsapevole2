@@ -1788,3 +1788,67 @@ section {
         margin: 2rem 0;
     }
 }
+
+/* ---------- Intro home ---------- */
+
+.intro {
+    display: grid;
+    gap: 3rem;
+    align-items: center;
+}
+
+.intro__eyebrow {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+}
+
+.intro__title {
+    font-family: var(--font-sans);
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    font-weight: 600;
+    line-height: 1.25;
+    margin-bottom: 1.5rem;
+}
+
+.intro__lead {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: rgba(40, 40, 30, 0.7);
+}
+
+.intro__lead + .intro__lead {
+    margin-top: 1rem;
+}
+
+.intro__list li {
+    display: flex;
+    align-items: baseline;
+    gap: 1.25rem;
+    padding: 1.25rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.intro__list li:first-child {
+    border-top: 1px solid var(--border);
+}
+
+.intro__list span {
+    min-width: 1.75rem;
+    color: var(--accent);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+}
+
+@media (min-width: 48em) {
+    .intro {
+        grid-template-columns: 7fr 5fr;
+        gap: 5rem;
+    }
+}
