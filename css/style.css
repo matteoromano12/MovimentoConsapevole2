@@ -668,6 +668,10 @@ section {
     font-size: 2.2rem;
 }
 
+.section-head p {
+    font-family: var(--font-serif);
+}
+
 /* ---------- Methodology (home) ---------- */
 
 .method-grid {
