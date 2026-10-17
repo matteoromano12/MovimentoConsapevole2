@@ -121,7 +121,7 @@ async function handleApi(request, env, url, ctx) {
     const bookingUpdate = pathname.match(/^\/api\/bookings\/(\d+)$/);
     if (bookingUpdate && method === 'PATCH') {
         if (!(await requireAuth(request, env))) return unauthorized();
-        return handleUpdateBookingStatus(request, env, Number(bookingUpdate[1]));
+        return handleUpdateBookingStatus(request, env, Number(bookingUpdate[1]), ctx);
     }
     if (bookingUpdate && method === 'DELETE') {
         if (!(await requireAuth(request, env))) return unauthorized();
@@ -441,7 +441,7 @@ ${b.reason || '-'}`,
     }
 }
 
-async function handleUpdateBookingStatus(request, env, id) {
+async function handleUpdateBookingStatus(request, env, id, ctx) {
     let body;
     try {
         body = await request.json();
@@ -457,8 +457,15 @@ async function handleUpdateBookingStatus(request, env, id) {
     const idx = bookings.findIndex((b) => b.id === id);
     if (idx === -1) return jsonResponse({ error: 'Prenotazione non trovata' }, 404);
 
+    const previousStatus = bookings[idx].status;
     bookings[idx].status = body.status;
     await writeList(env, BOOKINGS_KEY, bookings);
+
+    // Mail al cliente solo se lo stato cambia davvero verso accettata/rifiutata
+    if (body.status !== previousStatus && (body.status === 'accepted' || body.status === 'rejected')) {
+        ctx.waitUntil(sendStatusEmail(env, bookings[idx]));
+    }
+
     return jsonResponse(bookings[idx]);
 }
 
@@ -626,4 +633,68 @@ async function constantTimeEqual(a, b) {
     let diff = 0;
     for (let i = 0; i < bytesA.length; i++) diff |= bytesA[i] ^ bytesB[i];
     return diff === 0 && a.length === b.length;
+}
+
+const MONTHS_IT = ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'];
+
+function formatDateIT(dateISO) {
+    const [y, m, d] = dateISO.split('-').map(Number);
+    return `${d} ${MONTHS_IT[m - 1]} ${y}`;
+}
+
+async function sendStatusEmail(env, b) {
+    if (!env.RESEND_API_KEY) {
+        console.error('RESEND_API_KEY mancante: email non inviata');
+        return;
+    }
+
+    const when = `${formatDateIT(b.dateISO)} alle ${b.time}`;
+    const modalityLine = b.modality ? `\nModalità: ${b.modality}` : '';
+    let subject, text;
+
+    if (b.status === 'accepted') {
+        subject = 'Prenotazione confermata';
+        text =
+            `Ciao ${b.name},
+
+la tua prenotazione è stata confermata.
+
+Data: ${when}${modalityLine}
+
+Se hai bisogno di spostare l'appuntamento, rispondi a questa email.
+
+A presto,
+Mary Ceraulo`;
+    } else {
+        subject = 'Prenotazione non disponibile';
+        text =
+            `Ciao ${b.name},
+
+purtroppo non è stato possibile confermare la tua prenotazione del ${when}.
+
+Puoi scegliere un altro orario dal sito oppure rispondere a questa email per accordarci.
+
+Grazie,
+Mary Ceraulo`;
+    }
+
+    try {
+        const res = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${env.RESEND_API_KEY}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                from: MAIL_FROM,
+                to: [b.email],
+                reply_to: NOTIFY_EMAIL,
+                subject,
+                text,
+            }),
+        });
+        if (!res.ok) console.error('Resend error', res.status, await res.text());
+    } catch (e) {
+        console.error('Resend fetch failed', e);
+    }
 }
