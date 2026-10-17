@@ -486,7 +486,7 @@ async function handleUpdateBookingStatus(request, env, id, ctx) {
     const result = Object.assign({}, bookings[idx]);
 
     // Mail al cliente solo se lo stato cambia davvero verso accettata/rifiutata
-    if (body.status !== previousStatus && (body.status === 'accepted' || body.status === 'rejected')) {
+    if (body.status !== previousStatus && (body.status === 'accepted' || body.status === 'rejected' || body.status === 'no_show')) {
         ctx.waitUntil(sendStatusEmail(env, bookings[idx]));
     }
 
@@ -748,7 +748,7 @@ Mary Ceraulo
 Chinesiologa e istruttrice di Pilates
 Movimento Consapevole
 www.maryceraulo.it`;
-    } else {
+    } else if ((b.status === 'rejected')) {
         subject = 'Prenotazione non disponibile';
         text =
             `Ciao ${b.name},
@@ -762,6 +762,27 @@ Mi scuso per l'inconveniente e per l'eventuale disagio.
 Se lo desideri, puoi contattarmi per concordare una data o un orario alternativo.
 
 Grazie per la comprensione!
+
+Un saluto,
+
+Mary Ceraulo
+Chinesiologa e istruttrice di Pilates
+Movimento Consapevole
+www.maryceraulo.it`;
+    } else if (b.status === 'no_show') {
+        subject = 'Ci sei mancato al tuo appuntamento – Movimento Consapevole \n';
+        text =
+            `Ciao ${b.name},
+
+oggi era previsto il tuo appuntamento con Movimento Consapevole di Mary Ceraulo, ma non avendo ricevuto comunicazioni e non essendoti presentato/a, l'appuntamento risulta come mancata presentazione.
+
+Se hai avuto un imprevisto, mi dispiace non averti incontrato/a. Ti chiedo, per i prossimi appuntamenti, di avvisarmi con almeno 8 ore di anticipo in caso di impossibilità a presentarti.
+
+Ti ricordo che due mancate presentazioni consecutive senza un adeguato preavviso comportano l'inserimento nell'elenco interno di esclusione dalle prenotazioni online.
+
+Se desideri fissare un nuovo appuntamento o chiarire quanto accaduto, puoi contattarmi rispondendo a questa email.
+
+Grazie per la comprensione.
 
 Un saluto,
 
