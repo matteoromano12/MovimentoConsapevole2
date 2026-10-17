@@ -11,7 +11,7 @@ const SETTINGS_KEY = 'settings';
 const NOTIFY_EMAIL = 'seekromano@gmail.com';
 // Mittente: finché non verifichi un dominio su Resend, lascia questo.
 // Quando avrai il dominio verificato, cambialo (es. 'Sito <noreply@dominiocliente.it>')
-const MAIL_FROM = 'Nuova Prenotazione <noreply@maryceraulo.it>';
+const MAIL_FROM = 'Nuova Prenotazione <movimentoconsapevole@maryceraulo.it>';
 
 const DEFAULT_SETTINGS = {
     slotMinutes: 60,
