@@ -9,7 +9,7 @@ const BLOCKED_EMAILS_KEY = 'blockedEmails';
 const NO_SHOW_LIMIT = 2;
 
 // ---- Email (Resend) ----
-const NOTIFY_EMAIL = 'seekromano@gmail.com';
+const NOTIFY_EMAIL = 'ceraulomt@gmail.com';
 const MAIL_FROM = 'Movimento Consapevole <info@maryceraulo.it>';
 
 function createDefaultDay(open) {
