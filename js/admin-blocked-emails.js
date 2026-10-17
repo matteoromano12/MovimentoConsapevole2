@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // usato dal pulsante "Blocca email" nelle prenotazioni
-    window.BlockedEmails = { block: block };
+    window.BlockedEmails = { block: block, reload: load };
 
     load();
 });

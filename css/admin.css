@@ -620,3 +620,5 @@ body.admin-modal-open {
     flex-wrap: wrap;
   }
 }
+
+.booking-status--no_show { background: #f3d9d9; color: #8a1f1f; }

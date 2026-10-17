@@ -5,6 +5,9 @@ document.addEventListener('DOMContentLoaded', function () {
     return;
   }
 
+  var STATUS_LABELS = { pending: 'In attesa', accepted: 'Confermata', rejected: 'Rifiutata', no_show: 'Non presentato' };
+  var STATUS_PRIORITY = { pending: 0, accepted: 1, rejected: 2, no_show: 3 };
+
   var WEEKDAYS_IT = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
   var MONTHS_IT = ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'];
   var STATUS_LABELS = { pending: 'In attesa', accepted: 'Confermata', rejected: 'Rifiutata' };
@@ -68,6 +71,9 @@ document.addEventListener('DOMContentLoaded', function () {
               '<button type="button" class="btn-link btn-link--danger" data-reject-booking="' + booking.id + '">Rifiuta</button>'
             : '') +
           '<button type="button" class="btn-link btn-link--danger" data-block-email="' + escapeHtml(booking.email) + '">Blocca email</button>' +
+            (booking.status === 'accepted'
+                ? '<button type="button" class="btn-link btn-link--danger" data-noshow-booking="' + booking.id + '">Non presentato</button>'
+                : '') +
           '<button type="button" class="btn-link btn-link--danger" data-delete-booking="' + booking.id + '">Elimina</button>' +
           '</div>';
         listEl.appendChild(row);
@@ -84,6 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var rejectId = event.target.getAttribute('data-reject-booking');
     var deleteId = event.target.getAttribute('data-delete-booking');
     var blockEmail = event.target.getAttribute('data-block-email');
+      var noShowId = event.target.getAttribute('data-noshow-booking');
 
     if (acceptId) {
       BookingsStore.updateStatus(acceptId, 'accepted').then(renderList).then(function () {
@@ -108,6 +115,21 @@ document.addEventListener('DOMContentLoaded', function () {
     } else if (blockEmail) {
         if (window.confirm('Bloccare ' + blockEmail + '? Non potrà più prenotare.')) {
             window.BlockedEmails.block(blockEmail);
+        }
+    } else if (noShowId) {
+        if (window.confirm('Segnare questo cliente come non presentato?')) {
+            BookingsStore.updateStatus(noShowId, 'no_show').then(function (updated) {
+                return renderList().then(function () { return updated; });
+            }).then(function (updated) {
+                if (updated && updated.autoBlocked) {
+                    AdminToast.show('Segnato come non presentato. Email bloccata in automatico (2 assenze consecutive).');
+                    if (window.BlockedEmails) window.BlockedEmails.reload();
+                } else {
+                    AdminToast.show('Segnato come non presentato.');
+                }
+            }).catch(function (err) {
+                AdminAuth.handleError(err, 'Impossibile aggiornare la prenotazione.');
+            });
         }
     }
   });

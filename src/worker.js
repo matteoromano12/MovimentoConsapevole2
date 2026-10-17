@@ -6,12 +6,13 @@ const PRODUCTS_KEY = 'products';
 const BOOKINGS_KEY = 'bookings';
 const SETTINGS_KEY = 'settings';
 const BLOCKED_EMAILS_KEY = 'blockedEmails';
+const NO_SHOW_LIMIT = 2; // mancate presenze dopo cui l'email viene bloccata in automatico
 
 // ---- Email (Resend) ----
 // Destinatario: chi riceve le notifiche di nuova prenotazione
 const NOTIFY_EMAIL = 'seekromano@gmail.com';
 // Mittente: dominio verificato su Resend
-const MAIL_FROM = 'Movimento Consapevole <movimentoconsapevole@maryceraulo.it>';
+const MAIL_FROM = 'Movimento Consapevole <info@maryceraulo.it>';
 
 const DEFAULT_SETTINGS = {
     slotMinutes: 60,
@@ -135,7 +136,7 @@ async function handleApi(request, env, url, ctx) {
     }
     if (pathname === '/api/blocked-emails' && method === 'POST') {
         if (!(await requireAuth(request, env))) return unauthorized();
-        return handleBlockEmail(request, env);
+        return handleBlockEmail(request, env, ctx);
     }
     if (pathname === '/api/blocked-emails' && method === 'DELETE') {
         if (!(await requireAuth(request, env))) return unauthorized();
@@ -389,11 +390,8 @@ async function handleCreateBooking(request, env, ctx) {
     const dateISO = body.dateISO;
     const time = body.time;
 
-    if (!name) {
-        return jsonResponse({ error: 'Inserisci il tuo nome.' }, 400);
-    }
-    if (!/^\S+@\S+\.\S+$/.test(email)) {
-        return jsonResponse({ error: 'Hai sbagliato il formato dell\'email.' }, 400);
+    if (!name || !email || !/^\S+@\S+\.\S+$/.test(email)) {
+        return jsonResponse({ error: 'Nome o email non validi' }, 400);
     }
 
     // Email bloccate dalla cliente dal pannello admin
@@ -473,7 +471,7 @@ async function handleUpdateBookingStatus(request, env, id, ctx) {
         return jsonResponse({ error: 'Richiesta non valida' }, 400);
     }
 
-    if (['accepted', 'rejected', 'pending'].indexOf(body.status) === -1) {
+    if (['accepted', 'rejected', 'pending', 'no_show'].indexOf(body.status) === -1) {
         return jsonResponse({ error: 'Stato non valido' }, 400);
     }
 
@@ -485,19 +483,30 @@ async function handleUpdateBookingStatus(request, env, id, ctx) {
     bookings[idx].status = body.status;
     await writeList(env, BOOKINGS_KEY, bookings);
 
+    const result = Object.assign({}, bookings[idx]);
+
     // Mail al cliente solo se lo stato cambia davvero verso accettata/rifiutata
     if (body.status !== previousStatus && (body.status === 'accepted' || body.status === 'rejected')) {
         ctx.waitUntil(sendStatusEmail(env, bookings[idx]));
     }
 
-    return jsonResponse(bookings[idx]);
+    // Non presentato: se sono consecutive (senza presenze in mezzo), blocco automatico + mail al cliente
+    if (body.status === 'no_show' && previousStatus !== 'no_show') {
+        const email = (bookings[idx].email || '').toLowerCase();
+        if (hasConsecutiveNoShows(bookings, email) && (await addBlockedEmail(env, email))) {
+            ctx.waitUntil(sendBlockedEmail(env, email, bookings[idx].name));
+            result.autoBlocked = true;
+        }
+    }
+
+    return jsonResponse(result);
 }
 
 // ---------------------------------------------------------------------------
 // Blocked emails
 // ---------------------------------------------------------------------------
 
-async function handleBlockEmail(request, env) {
+async function handleBlockEmail(request, env, ctx) {
     let body;
     try {
         body = await request.json();
@@ -514,6 +523,11 @@ async function handleBlockEmail(request, env) {
     if (list.indexOf(email) === -1) {
         list.push(email);
         await writeList(env, BLOCKED_EMAILS_KEY, list);
+
+        // Avvisa il cliente del blocco (usa il nome se ha già prenotato)
+        const bookings = await readList(env, BOOKINGS_KEY);
+        const known = bookings.find((b) => (b.email || '').toLowerCase() === email);
+        ctx.waitUntil(sendBlockedEmail(env, email, known ? known.name : ''));
     }
     return jsonResponse(list);
 }
@@ -718,25 +732,43 @@ async function sendStatusEmail(env, b) {
         text =
             `Ciao ${b.name},
 
-la tua prenotazione è stata confermata.
+ti confermo di aver ricevuto la tua richiesta di prenotazione per [data] alle [ora], presso il mio studio / online.
 
-Data: ${when}${modalityLine}
+Ti ringrazio per aver scelto Movimento Consapevole di Mary Ceraulo.
 
-Se hai bisogno di spostare l'appuntamento, rispondi a questa email.
+Ti chiedo cortesemente, qualora non potessi presentarti all’appuntamento, di avvisarmi con il dovuto anticipo, così da permettermi di organizzare al meglio gli appuntamenti e offrire lo spazio ad altre persone.
 
-A presto,
-Mary Ceraulo`;
+Attenzione: in caso di due mancate presentazioni consecutive senza preavviso, l’indirizzo email e il numero di cellulare associati alle prenotazioni potranno essere inseriti in un elenco interno di esclusione, con conseguente blocco delle successive prenotazioni online.
+
+Per eventuali imprevisti o necessità di modifica dell’appuntamento, puoi contattarmi rispondendo a questa email.
+
+Grazie per la collaborazione e a presto!
+
+Mary Ceraulo
+Chinesiologa e istruttrice di Pilates
+Movimento Consapevole
+www.maryceraulo.it`;
     } else {
         subject = 'Prenotazione non disponibile';
         text =
             `Ciao ${b.name},
 
-purtroppo non è stato possibile confermare la tua prenotazione del ${when}.
+ti ringrazio per aver scelto Movimento Consapevole di Mary Ceraulo e per aver inviato la tua richiesta di prenotazione.
 
-Puoi scegliere un altro orario dal sito oppure rispondere a questa email per accordarci.
+Mi dispiace, ma non posso confermare l'appuntamento nella data e nell'orario richiesti. Potrebbe esserci stata una differenza tra le disponibilità mostrate sul sito e la mia agenda aggiornata.
 
-Grazie,
-Mary Ceraulo`;
+Mi scuso per l'inconveniente e per l'eventuale disagio.
+
+Se lo desideri, puoi contattarmi per concordare una data o un orario alternativo.
+
+Grazie per la comprensione!
+
+Un saluto,
+
+Mary Ceraulo
+Chinesiologa e istruttrice di Pilates
+Movimento Consapevole
+www.maryceraulo.it`;
     }
 
     try {
@@ -751,6 +783,83 @@ Mary Ceraulo`;
                 to: [b.email],
                 reply_to: NOTIFY_EMAIL,
                 subject,
+                text,
+            }),
+        });
+        if (!res.ok) console.error('Resend error', res.status, await res.text());
+    } catch (e) {
+        console.error('Resend fetch failed', e);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Mancate presenze e blocco automatico
+// ---------------------------------------------------------------------------
+
+// true se le ultime NO_SHOW_LIMIT prenotazioni "concluse" dell'email sono tutte "non presentato".
+// Contano come concluse: quelle segnate non presentato e quelle accettate con data/ora già passata
+// (le accettate passate non segnate come non presentato sono considerate presenze, quindi azzerano la serie).
+function hasConsecutiveNoShows(bookings, email) {
+    const now = nowInRome();
+    const nowKey = now.dateISO + ' ' + minutesToTime(now.minutes);
+    const keyOf = (b) => b.dateISO + ' ' + b.time;
+
+    const history = bookings
+        .filter((b) => (b.email || '').toLowerCase() === email)
+        .filter((b) => b.status === 'no_show' || (b.status === 'accepted' && keyOf(b) <= nowKey))
+        .sort((a, b) => (keyOf(a) < keyOf(b) ? -1 : keyOf(a) > keyOf(b) ? 1 : 0));
+
+    if (history.length < NO_SHOW_LIMIT) return false;
+    return history.slice(-NO_SHOW_LIMIT).every((b) => b.status === 'no_show');
+}
+
+// Aggiunge l'email alla lista dei bloccati. Ritorna true solo se non c'era già.
+async function addBlockedEmail(env, email) {
+    const list = await readList(env, BLOCKED_EMAILS_KEY);
+    if (list.indexOf(email) !== -1) return false;
+    list.push(email);
+    await writeList(env, BLOCKED_EMAILS_KEY, list);
+    return true;
+}
+
+async function sendBlockedEmail(env, email, name) {
+    if (!env.RESEND_API_KEY) {
+        console.error('RESEND_API_KEY mancante: email non inviata');
+        return;
+    }
+
+    const greeting = name ? `Ciao ${name},` : 'Ciao,';
+
+    const text =
+        `${greeting}
+
+ti scrivo in merito alla tua seconda mancata presentazione consecutiva agli appuntamenti prenotati con Movimento Consapevole di Mary Ceraulo, senza un adeguato preavviso.
+
+Come indicato nella comunicazione precedente, questa situazione comporta l'inserimento del tuo indirizzo email e del tuo numero di cellulare nell'elenco interno di esclusione dalle prenotazioni online. Di conseguenza, al momento non potrai effettuare nuove prenotazioni direttamente dal sito.
+
+Se ritieni che ci sia stato un errore o desideri chiarire la situazione e richiedere la riattivazione delle prenotazioni, puoi contattarmi tramite messaggio su WhatsApp.
+
+Valuterò la tua richiesta e ti comunicherò l'eventuale riattivazione.
+
+Grazie per l'attenzione.
+
+Mary Ceraulo
+Chinesiologa e istruttrice di Pilates
+Movimento Consapevole
+www.maryceraulo.it`;
+
+    try {
+        const res = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${env.RESEND_API_KEY}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                from: MAIL_FROM,
+                to: [email],
+                reply_to: NOTIFY_EMAIL,
+                subject: 'Avviso di esclusione dalle prenotazioni online – Movimento Consapevole',
                 text,
             }),
         });
