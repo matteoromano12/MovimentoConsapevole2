@@ -64,6 +64,11 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
     }
 
+      if (!/^\S+@\S+\.\S+$/.test(booking.email)) {
+          showNote('Hai sbagliato il formato dell\'email.', true);
+          return;
+      }
+
     submitBtn.disabled = true;
     submitBtn.textContent = 'Invio in corso…';
 
@@ -72,12 +77,16 @@ document.addEventListener('DOMContentLoaded', function () {
       form.reset();
       resetTimeField('Scegli prima una data');
     }).catch(function (err) {
-      if (err.status === 409) {
-        showNote('Questo orario è stato appena prenotato da qualcun altro: scegli un altro orario.', true);
-        dateField.dispatchEvent(new Event('change'));
-      } else {
-        showNote('Non è stato possibile inviare la richiesta. Riprova tra poco.', true);
-      }
+        if (err.status === 409) {
+            showNote('Questo orario è stato appena prenotato da qualcun altro: scegli un altro orario.', true);
+            dateField.dispatchEvent(new Event('change'));
+        } else if (err.status === 403) {
+            showNote('Non è possibile completare la prenotazione con questo indirizzo email.', true);
+        } else if (err.status === 400) {
+            showNote('Controlla i dati inseriti: nome, email, data e orario.', true);
+        } else {
+            showNote('Non è stato possibile inviare la richiesta. Riprova tra poco.', true);
+        }
     }).finally(function () {
       submitBtn.disabled = false;
       submitBtn.textContent = 'Invia richiesta';

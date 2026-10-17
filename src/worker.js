@@ -389,8 +389,11 @@ async function handleCreateBooking(request, env, ctx) {
     const dateISO = body.dateISO;
     const time = body.time;
 
-    if (!name || !email || !/^\S+@\S+\.\S+$/.test(email)) {
-        return jsonResponse({ error: 'Nome o email non validi' }, 400);
+    if (!name) {
+        return jsonResponse({ error: 'Inserisci il tuo nome.' }, 400);
+    }
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+        return jsonResponse({ error: 'Hai sbagliato il formato dell\'email.' }, 400);
     }
 
     // Email bloccate dalla cliente dal pannello admin
