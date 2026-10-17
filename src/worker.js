@@ -732,7 +732,7 @@ async function sendStatusEmail(env, b) {
         text =
             `Ciao ${b.name},
 
-ti confermo di aver ricevuto la tua richiesta di prenotazione per [data] alle [ora], presso il mio studio / online.
+ti confermo di aver ricevuto la tua richiesta di prenotazione per ${b.dateISO} alle ${b.time}, presso il mio studio / online.
 
 Ti ringrazio per aver scelto Movimento Consapevole di Mary Ceraulo.
 
