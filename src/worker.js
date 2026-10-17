@@ -486,7 +486,7 @@ async function handleUpdateBookingStatus(request, env, id, ctx) {
     const result = Object.assign({}, bookings[idx]);
 
     // Mail al cliente solo se lo stato cambia davvero verso accettata/rifiutata
-    if (body.status !== previousStatus && (body.status === 'accepted' || body.status === 'rejected' || body.status === 'no_show')) {
+    if (body.status !== previousStatus && (body.status === 'accepted' || body.status === 'rejected')) {
         ctx.waitUntil(sendStatusEmail(env, bookings[idx]));
     }
 
@@ -881,6 +881,55 @@ www.maryceraulo.it`;
                 to: [email],
                 reply_to: NOTIFY_EMAIL,
                 subject: 'Avviso di esclusione dalle prenotazioni online – Movimento Consapevole',
+                text,
+            }),
+        });
+        if (!res.ok) console.error('Resend error', res.status, await res.text());
+    } catch (e) {
+        console.error('Resend fetch failed', e);
+    }
+}
+
+async function sendNoShowEmail(env, email, name) {
+    if (!env.RESEND_API_KEY) {
+        console.error('RESEND_API_KEY mancante: email non inviata');
+        return;
+    }
+
+    const greeting = name ? `Ciao ${name},` : 'Ciao,';
+
+    const text =
+        `${greeting}
+
+oggi era previsto il tuo appuntamento con Movimento Consapevole di Mary Ceraulo, ma non avendo ricevuto comunicazioni e non essendoti presentato/a, l'appuntamento risulta come mancata presentazione.
+
+Se hai avuto un imprevisto, mi dispiace non averti incontrato/a. Ti chiedo, per i prossimi appuntamenti, di avvisarmi con almeno 8 ore di anticipo in caso di impossibilità a presentarti.
+
+Ti ricordo che due mancate presentazioni consecutive senza un adeguato preavviso comportano l'inserimento nell'elenco interno di esclusione dalle prenotazioni online.
+
+Se desideri fissare un nuovo appuntamento o chiarire quanto accaduto, puoi contattarmi rispondendo a questa email.
+
+Grazie per la comprensione.
+
+Un saluto,
+
+Mary Ceraulo
+Chinesiologa e istruttrice di Pilates
+Movimento Consapevole
+www.maryceraulo.it`;
+
+    try {
+        const res = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${env.RESEND_API_KEY}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                from: MAIL_FROM,
+                to: [email],
+                reply_to: NOTIFY_EMAIL,
+                subject: 'Ci sei mancato al tuo appuntamento – Movimento Consapevole',
                 text,
             }),
         });
