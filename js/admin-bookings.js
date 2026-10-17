@@ -67,6 +67,7 @@ document.addEventListener('DOMContentLoaded', function () {
             ? '<button type="button" class="btn-link" data-accept-booking="' + booking.id + '">Accetta</button>' +
               '<button type="button" class="btn-link btn-link--danger" data-reject-booking="' + booking.id + '">Rifiuta</button>'
             : '') +
+          '<button type="button" class="btn-link btn-link--danger" data-block-email="' + escapeHtml(booking.email) + '">Blocca email</button>' +
           '<button type="button" class="btn-link btn-link--danger" data-delete-booking="' + booking.id + '">Elimina</button>' +
           '</div>';
         listEl.appendChild(row);
@@ -82,6 +83,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var acceptId = event.target.getAttribute('data-accept-booking');
     var rejectId = event.target.getAttribute('data-reject-booking');
     var deleteId = event.target.getAttribute('data-delete-booking');
+    var blockEmail = event.target.getAttribute('data-block-email');
 
     if (acceptId) {
       BookingsStore.updateStatus(acceptId, 'accepted').then(renderList).then(function () {
@@ -103,6 +105,10 @@ document.addEventListener('DOMContentLoaded', function () {
           AdminAuth.handleError(err, 'Impossibile eliminare la prenotazione.');
         });
       }
+    } else if (blockEmail) {
+        if (window.confirm('Bloccare ' + blockEmail + '? Non potrà più prenotare.')) {
+            window.BlockedEmails.block(blockEmail);
+        }
     }
   });
 

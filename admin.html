@@ -64,6 +64,15 @@
       <p class="admin-panel__intro">Le nuove richieste arrivano "in attesa": accettale o rifiutale per confermarle al cliente. Le prenotazioni accettate o in attesa occupano l'orario nel calendario pubblico.</p>
       <div class="admin-list" data-bookings-list></div>
       <p class="admin-empty" data-bookings-empty hidden>Non ci sono ancora prenotazioni.</p>
+        <div style="margin-top: 3rem;">
+            <h2 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Email bloccate</h2>
+            <p class="admin-panel__intro">Questi indirizzi non possono più inviare richieste di prenotazione.</p>
+            <form class="blocked-dates__add" data-block-email-form>
+                <input type="email" data-block-email-input placeholder="cliente@esempio.it" required>
+                <button type="submit" class="btn btn-outline">Blocca email</button>
+            </form>
+            <div data-blocked-emails-list></div>
+        </div>
     </section>
 
     <!-- ===================== Shop ===================== -->
@@ -267,6 +276,7 @@
   <script src="js/admin-tabs.js"></script>
   <script src="js/admin.js"></script>
   <script src="js/admin-bookings.js"></script>
+  <script src="js/admin-blocked-emails.js"></script>
   <script src="js/admin-shop.js"></script>
   <script src="js/admin-availability.js"></script>
 

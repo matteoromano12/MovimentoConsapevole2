@@ -5,12 +5,12 @@ const ARTICLES_KEY = 'articles';
 const PRODUCTS_KEY = 'products';
 const BOOKINGS_KEY = 'bookings';
 const SETTINGS_KEY = 'settings';
+const BLOCKED_EMAILS_KEY = 'blockedEmails';
 
 // ---- Email (Resend) ----
-// Destinatario: chi riceve le notifiche di prenotazione
+// Destinatario: chi riceve le notifiche di nuova prenotazione
 const NOTIFY_EMAIL = 'seekromano@gmail.com';
-// Mittente: finché non verifichi un dominio su Resend, lascia questo.
-// Quando avrai il dominio verificato, cambialo (es. 'Sito <noreply@dominiocliente.it>')
+// Mittente: dominio verificato su Resend
 const MAIL_FROM = 'Movimento Consapevole <movimentoconsapevole@maryceraulo.it>';
 
 const DEFAULT_SETTINGS = {
@@ -126,6 +126,20 @@ async function handleApi(request, env, url, ctx) {
     if (bookingUpdate && method === 'DELETE') {
         if (!(await requireAuth(request, env))) return unauthorized();
         return handleDeleteItem(env, BOOKINGS_KEY, Number(bookingUpdate[1]));
+    }
+
+    // ---- Blocked emails ----
+    if (pathname === '/api/blocked-emails' && method === 'GET') {
+        if (!(await requireAuth(request, env))) return unauthorized();
+        return jsonResponse(await readList(env, BLOCKED_EMAILS_KEY));
+    }
+    if (pathname === '/api/blocked-emails' && method === 'POST') {
+        if (!(await requireAuth(request, env))) return unauthorized();
+        return handleBlockEmail(request, env);
+    }
+    if (pathname === '/api/blocked-emails' && method === 'DELETE') {
+        if (!(await requireAuth(request, env))) return unauthorized();
+        return handleUnblockEmail(env, url);
     }
 
     return jsonResponse({ error: 'Non trovato' }, 404);
@@ -378,6 +392,13 @@ async function handleCreateBooking(request, env, ctx) {
     if (!name || !email || !/^\S+@\S+\.\S+$/.test(email)) {
         return jsonResponse({ error: 'Nome o email non validi' }, 400);
     }
+
+    // Email bloccate dalla cliente dal pannello admin
+    const blocked = await readList(env, BLOCKED_EMAILS_KEY);
+    if (blocked.indexOf(email.toLowerCase()) !== -1) {
+        return jsonResponse({ error: 'Non è possibile completare la prenotazione con questo indirizzo email.' }, 403);
+    }
+
     if (!/^\d{4}-\d{2}-\d{2}$/.test(dateISO) || !/^\d{2}:\d{2}$/.test(time)) {
         return jsonResponse({ error: 'Data o orario non validi' }, 400);
     }
@@ -467,6 +488,39 @@ async function handleUpdateBookingStatus(request, env, id, ctx) {
     }
 
     return jsonResponse(bookings[idx]);
+}
+
+// ---------------------------------------------------------------------------
+// Blocked emails
+// ---------------------------------------------------------------------------
+
+async function handleBlockEmail(request, env) {
+    let body;
+    try {
+        body = await request.json();
+    } catch (e) {
+        return jsonResponse({ error: 'Richiesta non valida' }, 400);
+    }
+
+    const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+        return jsonResponse({ error: 'Email non valida' }, 400);
+    }
+
+    const list = await readList(env, BLOCKED_EMAILS_KEY);
+    if (list.indexOf(email) === -1) {
+        list.push(email);
+        await writeList(env, BLOCKED_EMAILS_KEY, list);
+    }
+    return jsonResponse(list);
+}
+
+async function handleUnblockEmail(env, url) {
+    const email = (url.searchParams.get('email') || '').trim().toLowerCase();
+    const list = await readList(env, BLOCKED_EMAILS_KEY);
+    const next = list.filter((e) => e !== email);
+    await writeList(env, BLOCKED_EMAILS_KEY, next);
+    return jsonResponse(next);
 }
 
 // ---------------------------------------------------------------------------
@@ -634,6 +688,10 @@ async function constantTimeEqual(a, b) {
     for (let i = 0; i < bytesA.length; i++) diff |= bytesA[i] ^ bytesB[i];
     return diff === 0 && a.length === b.length;
 }
+
+// ---------------------------------------------------------------------------
+// Email di stato (accettata / rifiutata) al cliente
+// ---------------------------------------------------------------------------
 
 const MONTHS_IT = ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'];
 
