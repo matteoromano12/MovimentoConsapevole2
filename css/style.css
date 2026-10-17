@@ -304,6 +304,7 @@ ul {
 .btn-light2 {
     background: var(--card);
     color: black;
+    align-self: flex-end;
 }
 
 .btn-light2:hover {
@@ -1884,6 +1885,6 @@ section {
 }
 
 .logo__img {
-    height: 3rem;
+    height: 5rem;
     width: auto;
 }
