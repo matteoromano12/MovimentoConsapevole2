@@ -5,13 +5,10 @@ document.addEventListener('DOMContentLoaded', function () {
     return;
   }
 
-  var STATUS_LABELS = { pending: 'In attesa', accepted: 'Confermata', rejected: 'Rifiutata', no_show: 'Non presentato' };
-  var STATUS_PRIORITY = { pending: 0, accepted: 1, rejected: 2, no_show: 3 };
-
   var WEEKDAYS_IT = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
   var MONTHS_IT = ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'];
-  var STATUS_LABELS = { pending: 'In attesa', accepted: 'Confermata', rejected: 'Rifiutata' };
-  var STATUS_PRIORITY = { pending: 0, accepted: 1, rejected: 2 };
+    var STATUS_LABELS = { pending: 'In attesa', accepted: 'Confermata', rejected: 'Rifiutata', no_show: 'Non presentato' };
+    var STATUS_PRIORITY = { pending: 0, accepted: 1, rejected: 2, no_show: 3 };
 
   function escapeHtml(str) {
     return String(str || '')

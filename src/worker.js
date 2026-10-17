@@ -490,6 +490,11 @@ async function handleUpdateBookingStatus(request, env, id, ctx) {
         ctx.waitUntil(sendStatusEmail(env, bookings[idx]));
     }
 
+    if (body.status === 'no_show') {
+        const email = (bookings[idx].email || '').toLowerCase();
+        ctx.waitUntil(sendNoShowEmail(env, email, bookings[idx].name));
+    }
+
     // Non presentato: se sono consecutive (senza presenze in mezzo), blocco automatico + mail al cliente
     if (body.status === 'no_show' && previousStatus !== 'no_show') {
         const email = (bookings[idx].email || '').toLowerCase();
