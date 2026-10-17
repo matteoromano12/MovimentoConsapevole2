@@ -301,6 +301,16 @@ ul {
   color: var(--accent-foreground);
 }
 
+.btn-light2 {
+    background: var(--card);
+    color: black;
+}
+
+.btn-light2:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+}
+
 .link-accent {
   display: inline-block;
   font-size: 0.72rem;
