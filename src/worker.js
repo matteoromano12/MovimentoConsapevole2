@@ -56,7 +56,9 @@ export default {
         if (url.pathname.startsWith('/api/')) {
             return handleApi(request, env, url, ctx);
         }
-
+        if (url.pathname.startsWith('/media/')) {
+            return handleMedia(url, env);
+        }
         return env.ASSETS.fetch(request);
     },
 };
@@ -108,6 +110,11 @@ async function handleApi(request, env, url, ctx) {
     if (pathname === '/api/articles/import' && method === 'POST') {
         if (!(await requireAuth(request, env))) return unauthorized();
         return handleImportArticles(request, env);
+    }
+
+    if (pathname === '/api/articles/migrate-images' && method === 'POST') {
+        if (!(await requireAuth(request, env))) return unauthorized();
+        return handleMigrateImages(env);
     }
 
     const articleDelete = pathname.match(/^\/api\/articles\/(\d+)$/);
@@ -246,7 +253,9 @@ async function handleSaveArticle(request, env) {
     article.body = Array.isArray(article.body) ? article.body : [];
     article.slug = slugify(article.title);
 
-    const saved = await upsertItem(env, ARTICLES_KEY, article);
+
+    const clean = await externalizeImages(env, article);
+    const saved = await upsertItem(env, ARTICLES_KEY, clean);
 
     return jsonResponse(saved);
 }
@@ -1427,4 +1436,80 @@ www.maryceraulo.it`;
     } catch (e) {
         console.error('Resend fetch failed', e);
     }
+}
+const HAS_DATA_URI = /data:image\/[a-z0-9.+-]+;base64,/;
+const DATA_URI_RE = /data:(image\/[a-z0-9.+-]+);base64,([A-Za-z0-9+/=]+)/g;
+const EXT = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/gif': 'gif', 'image/svg+xml': 'svg' };
+
+async function storeDataUri(env, mime, b64) {
+    const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+    const hash = new Uint8Array(await crypto.subtle.digest('SHA-256', bytes));
+    const name = [...hash.slice(0, 12)].map((b) => b.toString(16).padStart(2, '0')).join('');
+    const key = name + '.' + (EXT[mime] || 'bin');
+
+    await env.IMAGES.put(key, bytes, { httpMetadata: { contentType: mime } });
+
+    return '/media/' + key;
+}
+
+async function externalizeImages(env, value) {
+    if (typeof value === 'string') {
+        const matches = [...value.matchAll(DATA_URI_RE)];
+        let out = value;
+
+        for (const m of matches) {
+            out = out.split(m[0]).join(await storeDataUri(env, m[1], m[2]));
+        }
+
+        return out;
+    }
+
+    if (Array.isArray(value)) {
+        const out = [];
+        for (const v of value) out.push(await externalizeImages(env, v));
+        return out;
+    }
+
+    if (value && typeof value === 'object') {
+        const out = {};
+        for (const [k, v] of Object.entries(value)) out[k] = await externalizeImages(env, v);
+        return out;
+    }
+
+    return value;
+}
+
+async function handleMedia(url, env) {
+    const key = decodeURIComponent(url.pathname.slice('/media/'.length));
+
+    if (!/^[a-f0-9]+\.[a-z0-9]+$/.test(key)) {
+        return new Response('Non trovato', { status: 404 });
+    }
+
+    const obj = await env.IMAGES.get(key);
+
+    if (!obj) return new Response('Non trovato', { status: 404 });
+
+    const headers = new Headers();
+    obj.writeHttpMetadata(headers);
+    headers.set('ETag', obj.httpEtag);
+    headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+
+    return new Response(obj.body, { headers });
+}
+
+async function handleMigrateImages(env) {
+    const list = await readList(env, ARTICLES_KEY);
+    const idx = list.findIndex((a) => HAS_DATA_URI.test(JSON.stringify(a)));
+
+    if (idx === -1) return jsonResponse({ ok: true, remaining: 0 });
+
+    list[idx] = await externalizeImages(env, list[idx]);
+    await writeList(env, ARTICLES_KEY, list);
+
+    return jsonResponse({
+        ok: true,
+        migrated: list[idx].id,
+        remaining: list.filter((a) => HAS_DATA_URI.test(JSON.stringify(a))).length,
+    });
 }
