@@ -11,7 +11,8 @@
 		"run_worker_first": [
 			"/",
 			"/admin.html",
-			"/api/*"
+			"/api/*",
+          "/media/*"
 		]
 	},
 	"kv_namespaces": [
@@ -24,10 +25,6 @@
 		{
 			"binding": "IMAGES",
 			"bucket_name": "mc-images"
-		},
-		{
-			"bucket_name": "mc-images",
-			"binding": "mc_images"
 		}
 	]
 }
