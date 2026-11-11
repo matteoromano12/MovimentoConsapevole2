@@ -4,7 +4,12 @@ document.addEventListener('DOMContentLoaded', function () {
     return;
   }
 
+  var limit = parseInt(grid.getAttribute('data-articles-limit'), 10);
+
   ArticlesStore.getAll().then(function (articles) {
+    if (limit > 0) {
+      articles = articles.slice(0, limit);
+    }
     grid.innerHTML = '';
     articles.forEach(function (item) {
       var a = document.createElement('a');
